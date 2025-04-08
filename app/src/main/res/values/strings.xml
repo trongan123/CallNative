@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">CallNative</string>
+    <string name="permission_denied_message">If you reject permission,you can not use this service Please turn on permissions at [Setting] > [Permission]</string>
+</resources>
