@@ -28,7 +28,7 @@ fun CallView(
     ) {
         if (hasVideo) {
             Box(modifier = Modifier.fillMaxSize()) {
-             //   VideoCallView()
+              VideoView()
             }
         } else {
             // Background Image

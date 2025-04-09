@@ -8,7 +8,7 @@ import javax.inject.Inject
 class ClickEndCallUseCase @Inject constructor() {
 
     fun handelEndCall(){
-        CoroutineUtils.launchBackground {
+        CoroutineUtils.launchOnMain {
             NavigationUtils.navigate(MainScreen.ROUTE)
         }
     }

@@ -30,8 +30,9 @@ import com.example.callnative.presentation.ui.views.HorizontalButton
 import com.example.callnative.presentation.viewmodel.CallViewModel
 import kotlin.math.roundToInt
 
-object CallScreen {
-    const val ROUTE = "callScreen"
+object NotiCallScreen {
+    const val ROUTE = "notiCallScreen"
+
 
     @Composable
     fun Screen(
@@ -132,4 +133,5 @@ object CallScreen {
         }
 
     }
+
 }
