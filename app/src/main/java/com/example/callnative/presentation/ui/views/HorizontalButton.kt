@@ -20,14 +20,12 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.callnative.R
-import com.example.callnative.data.enums.CallType
 import com.example.callnative.presentation.viewmodel.CallViewModel
 
 @Composable
 fun HorizontalButton(
     viewModel: CallViewModel = hiltViewModel(),
-    context: Context = LocalContext.current,
-    callType: CallType?
+    context: Context = LocalContext.current
 ) {
     val hasSpeaker by viewModel.getHasSpeaker().collectAsState()
     val hasMicrophone by viewModel.getHasMicrophone().collectAsState()
@@ -56,9 +54,8 @@ fun HorizontalButton(
                     .focusGroup(),
                 iconResId = if (hasSpeaker) R.drawable.ic_speaker_enable else R.drawable.ic_speaker_disable,
                 label = context.getString(R.string.speaker),
-                size = 50.dp,
+                size = 60.dp,
                 onClick = {
-                    //
                     viewModel.toggleSpeaker()
                 })
             LabelButtonView(
@@ -68,8 +65,7 @@ fun HorizontalButton(
                     .padding(0.dp),
                 iconResId = if (hasVideo) R.drawable.ic_camera_enable else R.drawable.ic_camera_disable,
                 label = context.getString(R.string.camera),
-                size = 50.dp,
-                enable = callType == CallType.VIDEO_CALL,
+                size = 60.dp,
                 onClick = {
                     // Handle camera action
                     viewModel.toggleVideo()
@@ -79,22 +75,20 @@ fun HorizontalButton(
                 modifier = Modifier
                     .weight(1f)
                     .focusGroup(),
-                iconResId = if (hasMicrophone) R.drawable.ic_microphone_enable else R.drawable.ic_microphone_disable,
+                iconResId = if (hasMicrophone) R.drawable.ic_micro_enable else R.drawable.ic_micro_disable,
                 label = context.getString(R.string.mute),
-                size = 50.dp,
+                size = 60.dp,
                 onClick = {
-                    //
                     viewModel.toggleMicrophone()
                 })
             LabelButtonView(
                 modifier = Modifier
                     .weight(1f)
                     .focusGroup(),
-                iconResId = R.drawable.ic_end,
+                iconResId = R.drawable.ic_end_call,
                 label = context.getString(R.string.end),
-                size = 50.dp,
+                size = 60.dp,
                 onClick = {
-                    //
                     viewModel.handleEndCall()
                 })
         }

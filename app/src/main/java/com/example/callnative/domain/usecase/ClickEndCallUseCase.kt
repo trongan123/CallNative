@@ -9,7 +9,7 @@ class ClickEndCallUseCase @Inject constructor() {
 
     fun handelEndCall(){
         CoroutineUtils.launchOnMain {
-            NavigationUtils.navigate(MainScreen.ROUTE)
+            NavigationUtils.popBackStack()
         }
     }
 }

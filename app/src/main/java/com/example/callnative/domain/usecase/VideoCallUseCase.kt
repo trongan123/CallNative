@@ -79,6 +79,7 @@ class VideoCallUseCase @Inject constructor() {
         _hasVideo.value = hasVideo
     }
 
+
     fun getVideoTrackLocal(): VideoTrack? = videoTrackLocal
 
     fun switchCamera() {
@@ -92,5 +93,24 @@ class VideoCallUseCase @Inject constructor() {
     // vẫn giữ kết nối, vẫn bật video nhưng không chuyền video cho connection
     private fun disableVideo() {
         videoTrackLocal?.setEnabled(false)
+    }
+
+    fun releaseCamera(surfaceViewRenderer: SurfaceViewRenderer? = null) {
+        CoroutineUtils.launchBackground {
+            try {
+                videoCapturer?.stopCapture()
+                videoCapturer?.dispose()
+                videoSource?.dispose()
+                videoTrackLocal?.removeSink(surfaceViewRenderer)
+                surfaceViewRenderer?.release()
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+
+            videoCapturer = null
+            videoSource = null
+            videoTrackLocal = null
+            _hasVideo.value = false
+        }
     }
 }

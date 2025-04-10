@@ -1,10 +1,10 @@
 package com.example.callnative.presentation.viewmodel
 
 import android.content.Context
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.callnative.common.utils.CoroutineUtils
-import com.example.callnative.common.utils.NavigationUtils
 import com.example.callnative.data.enums.CallType
 import com.example.callnative.data.models.UserEntity
 import com.example.callnative.domain.usecase.AnswerCallUseCase
@@ -48,7 +48,7 @@ class CallViewModel @Inject constructor(
     private val _icCall = MutableStateFlow(false)
     val isCall: StateFlow<Boolean> = _icCall
 
-    private val _callType= MutableStateFlow<CallType>(CallType.VOICE_CALL)
+    private val _callType = MutableStateFlow<CallType>(CallType.VOICE_CALL)
     val callType: StateFlow<CallType> = _callType
 
     //Connection WebRTC
@@ -91,6 +91,7 @@ class CallViewModel @Inject constructor(
     }
 
     fun handleAnswer(isCallVideo: Boolean) {
+        _icCall.value = false
         answerCallUseCase.handleAnswerCall(isCallVideo)
     }
 
@@ -98,20 +99,20 @@ class CallViewModel @Inject constructor(
         return callDurationUseCase.callState
     }
 
+    fun releaseCamera(surfaceViewRenderer :SurfaceViewRenderer?){
+        if(surfaceViewRenderer == null) return
+
+        videoCallUseCase.releaseCamera(surfaceViewRenderer)
+    }
+
     fun openPermission(isCallVideo: Boolean) {
         permissionCallUseCase.handlePermissionCall(isCallVideo, onGranted = {
-            _callType.value = if (isCallVideo) CallType.VIDEO_CALL else CallType.VOICE_CALL
-            NavigationUtils.savedStateHandle(
-                "CallType",
-                _callType.value
-            )
-
             _icCall.value = true
+            _callType.value = if (isCallVideo) CallType.VIDEO_CALL else CallType.VOICE_CALL
             handleCallInfo()
         }, onDenied = {
             _icCall.value = false
         })
-
     }
 
     fun handleCamara(
@@ -119,9 +120,9 @@ class CallViewModel @Inject constructor(
         eglBase: EglBase,
         surfaceViewRenderer: SurfaceViewRenderer
     ) {
-        if (peerConnectionFactory == null) {
-            initPeerConnectionFactory()
-        }
+
+        initPeerConnectionFactory()
+
         CoroutineUtils.launchBackground {
             videoCallUseCase.handleRecordVideo(
                 context,
@@ -147,8 +148,8 @@ class CallViewModel @Inject constructor(
 
     fun handleEndCall() {
         CoroutineUtils.launchBackground {
-            clickEndCallUseCase.handelEndCall()
             _icCall.value = false
+            clickEndCallUseCase.handelEndCall()
         }
     }
 
@@ -170,7 +171,7 @@ class CallViewModel @Inject constructor(
 
     fun setupData(callType: CallType) {
         viewModelScope.launch {
-
+            handleCallInfo()
             // Setup default value for button
             val isVideoCall = callType == CallType.VIDEO_CALL
 

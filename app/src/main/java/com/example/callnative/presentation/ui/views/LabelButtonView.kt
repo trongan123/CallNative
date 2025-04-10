@@ -17,7 +17,6 @@ fun LabelButtonView(
     modifier: Modifier?,
     iconResId: Int,
     label: String,
-    enable: Boolean = true,
     onClick: () -> Unit,
     size : Dp
 ) {

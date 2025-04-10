@@ -1,6 +1,5 @@
 package com.example.callnative.domain.usecase
 
-import android.util.Log
 import com.example.callnative.common.utils.CoroutineUtils
 import com.example.callnative.common.utils.NavigationUtils
 import com.example.callnative.data.enums.CallType
@@ -11,7 +10,6 @@ class AnswerCallUseCase @Inject constructor() {
 
     fun handleAnswerCall(isCallVideo: Boolean) {
         CoroutineUtils.launchOnMain {
-            Log.d("TAG", "handleAnswerCall: "+isCallVideo )
             NavigationUtils.savedStateHandle(
                 "CallType",
                 if (isCallVideo) CallType.VIDEO_CALL else CallType.VOICE_CALL

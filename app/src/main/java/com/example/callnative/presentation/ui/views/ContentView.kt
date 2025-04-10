@@ -10,7 +10,8 @@ import androidx.compose.ui.unit.dp
 
 @Composable
 fun ContentView(
-    state: String, modifier: Modifier = Modifier
+    state: String,
+    modifier: Modifier = Modifier
 ) {
     Text(
         text = state,

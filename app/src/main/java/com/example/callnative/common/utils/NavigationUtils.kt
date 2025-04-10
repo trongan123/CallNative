@@ -13,7 +13,9 @@ object NavigationUtils {
     }
 
     fun popBackStack() {
-        navControllerRef?.get()?.popBackStack()
+        if (navControllerRef?.get()?.previousBackStackEntry != null) {
+            navControllerRef?.get()?.popBackStack()
+        }
     }
 
     fun navigate(route: String) {

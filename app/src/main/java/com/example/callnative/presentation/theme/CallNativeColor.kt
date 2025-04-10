@@ -10,6 +10,10 @@ val ColorScheme.black50: Color
     @Composable
     get() = black_50
 
+val ColorScheme.black80: Color
+    @Composable
+    get() = black_80
+
 val ColorScheme.color_text_type_call: Color
     @Composable
     get() = if (isSystemInDarkTheme()) color_text_type_call_dark else color_text_type_call_light

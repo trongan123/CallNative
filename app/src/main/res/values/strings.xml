@@ -11,4 +11,6 @@
     <string name="camera">Camera</string>
     <string name="mute">Mute</string>
     <string name="end">End</string>
+    <string name="ziichat">Ziichat</string>
+    <string name="tap_again_to_exit">Tap again to exit.</string>
 </resources>

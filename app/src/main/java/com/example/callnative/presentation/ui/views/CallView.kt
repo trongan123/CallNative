@@ -12,10 +12,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.blur
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.callnative.data.enums.ProfileViewSize
+import com.example.callnative.presentation.viewmodel.CallViewModel
 
 @Composable
 fun CallView(
+    viewModel: CallViewModel = hiltViewModel(),
     profileSize: ProfileViewSize,
     avatarImageUrl: String,
     displayName: String,
@@ -28,7 +31,7 @@ fun CallView(
     ) {
         if (hasVideo) {
             Box(modifier = Modifier.fillMaxSize()) {
-              VideoView()
+                VideoView(viewModel)
             }
         } else {
             // Background Image

@@ -20,6 +20,8 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.callnative.data.enums.CallType
 import com.example.callnative.presentation.ui.call.NotiCallScreen
+import com.example.callnative.presentation.ui.views.BackExit
+import com.example.callnative.presentation.ui.views.FullScreenDialog
 import com.example.callnative.presentation.viewmodel.CallViewModel
 import org.webrtc.PeerConnectionFactory
 
@@ -43,6 +45,7 @@ object MainScreen {
 
             onDispose { }
         }
+        BackExit()
 
         Scaffold(
             modifier = Modifier
@@ -80,10 +83,15 @@ object MainScreen {
         }
 
         if (isCall.value) {
-            NotiCallScreen.Screen(isCallVideo = callType.value == CallType.VIDEO_CALL)
+            FullScreenDialog(
+                onDismissRequest = {
+                    viewModel.handleDecline()
+                },
+            ) {
+                NotiCallScreen.Screen(isCallVideo = callType.value == CallType.VIDEO_CALL)
+            }
+
         }
 
     }
-
-
 }
