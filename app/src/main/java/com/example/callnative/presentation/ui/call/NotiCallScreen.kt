@@ -39,13 +39,13 @@ object NotiCallScreen {
     @Composable
     fun Screen(viewModel: CallViewModel = hiltViewModel(), isCallVideo: Boolean) {
         val context: Context = LocalContext.current
-        val callerData by viewModel.callerData.collectAsState()
+        val calleeData by viewModel.calleeData.collectAsState()
 
         Box(
             modifier = Modifier.fillMaxSize()
         ) {
             AsyncImageView(
-                imageUrl = callerData.avatarImageUrl,
+                imageUrl = calleeData.avatarImageUrl,
                 defaultAvatarResId = R.drawable.background_noti_call,
                 modifier = Modifier
                     .fillMaxSize()
@@ -66,7 +66,7 @@ object NotiCallScreen {
 
             ) {
                 Text(
-                    text = callerData.displayName,
+                    text = calleeData.displayName,
                     color = Color.White,
                     fontSize = 35.sp,
                     fontWeight = FontWeight.Bold,

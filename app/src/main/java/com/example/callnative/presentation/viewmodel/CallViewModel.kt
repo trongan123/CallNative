@@ -177,7 +177,7 @@ class CallViewModel @Inject constructor(
 
             videoCallUseCase.setHasVideo(isVideoCall)
             clickSpeakerUseCase.setHasSpeaker(isVideoCall)
-            audioCallUseCase.setHasMicrophone(isVideoCall)
+            audioCallUseCase.setHasMicrophone(true)
 
             callDurationUseCase.startCallTimer()
         }
