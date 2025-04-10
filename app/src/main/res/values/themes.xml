@@ -36,6 +36,5 @@
 
     </style>
 
-    <style name="Theme.CallNative" parent="Base.Theme.m3">
-    </style>
+    <style name="Theme.CallNative" parent="Base.Theme.m3"/>
 </resources>

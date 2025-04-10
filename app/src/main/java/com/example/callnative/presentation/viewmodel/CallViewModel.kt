@@ -7,13 +7,14 @@ import com.example.callnative.common.utils.CoroutineUtils
 import com.example.callnative.common.utils.NavigationUtils
 import com.example.callnative.data.enums.CallType
 import com.example.callnative.data.models.UserEntity
+import com.example.callnative.domain.usecase.AnswerCallUseCase
 import com.example.callnative.domain.usecase.AudioCallUseCase
 import com.example.callnative.domain.usecase.CallDurationUseCase
 import com.example.callnative.domain.usecase.ClickEndCallUseCase
 import com.example.callnative.domain.usecase.ClickSpeakerUseCase
+import com.example.callnative.domain.usecase.DeclineCallUseCase
 import com.example.callnative.domain.usecase.PermissionCallUseCase
 import com.example.callnative.domain.usecase.VideoCallUseCase
-import com.example.callnative.presentation.ui.call.CallScreen
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -32,7 +33,9 @@ class CallViewModel @Inject constructor(
     private val clickEndCallUseCase: ClickEndCallUseCase,
     private val audioCallUseCase: AudioCallUseCase,
     private val clickSpeakerUseCase: ClickSpeakerUseCase,
-    private val callDurationUseCase: CallDurationUseCase
+    private val callDurationUseCase: CallDurationUseCase,
+    private val answerCallUseCase: AnswerCallUseCase,
+    private val declineCallUseCase: DeclineCallUseCase
 ) : ViewModel() {
 
     // Mock data
@@ -41,6 +44,12 @@ class CallViewModel @Inject constructor(
 
     private val _callerData = MutableStateFlow<UserEntity>(UserEntity.default)
     val callerData: StateFlow<UserEntity> = _callerData
+
+    private val _icCall = MutableStateFlow(false)
+    val isCall: StateFlow<Boolean> = _icCall
+
+    private val _callType= MutableStateFlow<CallType>(CallType.VOICE_CALL)
+    val callType: StateFlow<CallType> = _callType
 
     //Connection WebRTC
     private var peerConnectionFactory: PeerConnectionFactory? = null
@@ -77,18 +86,31 @@ class CallViewModel @Inject constructor(
         return audioCallUseCase.hasMicrophone
     }
 
-    fun getCallState() : StateFlow<String>{
+    fun handleDecline() {
+        _icCall.value = false
+    }
+
+    fun handleAnswer(isCallVideo: Boolean) {
+        answerCallUseCase.handleAnswerCall(isCallVideo)
+    }
+
+    fun getCallState(): StateFlow<String> {
         return callDurationUseCase.callState
     }
 
     fun openPermission(isCallVideo: Boolean) {
         permissionCallUseCase.handlePermissionCall(isCallVideo, onGranted = {
+            _callType.value = if (isCallVideo) CallType.VIDEO_CALL else CallType.VOICE_CALL
             NavigationUtils.savedStateHandle(
                 "CallType",
-                if (isCallVideo) CallType.VIDEO_CALL else CallType.VOICE_CALL
+                _callType.value
             )
-            NavigationUtils.navigate(CallScreen.ROUTE)
-        }, null)
+
+            _icCall.value = true
+            handleCallInfo()
+        }, onDenied = {
+            _icCall.value = false
+        })
 
     }
 
@@ -126,12 +148,12 @@ class CallViewModel @Inject constructor(
     fun handleEndCall() {
         CoroutineUtils.launchBackground {
             clickEndCallUseCase.handelEndCall()
+            _icCall.value = false
         }
     }
 
-    fun setupData(callType: CallType) {
+    fun handleCallInfo() {
         viewModelScope.launch {
-
             // Callee & Caller data
             _calleeData.value = UserEntity(
                 userId = UUID.randomUUID().toString(),
@@ -143,6 +165,11 @@ class CallViewModel @Inject constructor(
                 avatarImageUrl = "https://images.pexels.com/photos/11288126/pexels-photo-11288126.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1",
                 displayName = "Issac NewYork"
             )
+        }
+    }
+
+    fun setupData(callType: CallType) {
+        viewModelScope.launch {
 
             // Setup default value for button
             val isVideoCall = callType == CallType.VIDEO_CALL

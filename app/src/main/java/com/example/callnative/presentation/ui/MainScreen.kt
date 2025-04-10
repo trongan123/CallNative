@@ -1,7 +1,7 @@
 package com.example.callnative.presentation.ui
 
 import android.content.Context
-import android.util.Log
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -12,11 +12,14 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.example.callnative.data.enums.CallType
+import com.example.callnative.presentation.ui.call.NotiCallScreen
 import com.example.callnative.presentation.viewmodel.CallViewModel
 import org.webrtc.PeerConnectionFactory
 
@@ -25,9 +28,13 @@ object MainScreen {
 
     @Composable
     fun Screen(
-        callViewModel: CallViewModel = hiltViewModel(),
+        viewModel: CallViewModel = hiltViewModel(),
         context: Context = LocalContext.current
     ) {
+
+        val isCall = viewModel.isCall.collectAsState()
+        val callType = viewModel.callType.collectAsState()
+
         DisposableEffect(Unit) {
             PeerConnectionFactory.initialize(
                 PeerConnectionFactory.InitializationOptions.builder(context)
@@ -46,27 +53,34 @@ object MainScreen {
             Row(
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(innerPadding)
-                    .padding(top = 100.dp)
+                    .padding(innerPadding),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.Center
             ) {
 
-                Column(modifier = Modifier.fillMaxSize()) {
+                Column(
+                    modifier = Modifier.fillMaxSize(),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.Center
+                ) {
                     Button(onClick = {
                         // Mở VideoCallActivity
-                        Log.e("TAG Call", "Screen: call video ")
-                        callViewModel.openPermission(true)
+                        viewModel.openPermission(true)
                     }) {
                         Text("Video Call", color = Color.White)
                     }
                     Button(onClick = {
                         // Mở VoiceCallActivity
-                        Log.e("TAG Call", "Screen: call voice ")
-                        callViewModel.openPermission(false)
+                        viewModel.openPermission(false)
                     }) {
                         Text("Voice Call", color = Color.White)
                     }
                 }
             }
+        }
+
+        if (isCall.value) {
+            NotiCallScreen.Screen(isCallVideo = callType.value == CallType.VIDEO_CALL)
         }
 
     }

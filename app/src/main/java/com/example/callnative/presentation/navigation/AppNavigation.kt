@@ -7,6 +7,7 @@ import androidx.navigation.compose.rememberNavController
 import com.example.callnative.common.utils.NavigationUtils
 import com.example.callnative.presentation.ui.MainScreen
 import com.example.callnative.presentation.ui.call.CallScreen
+import com.example.callnative.presentation.ui.call.NotiCallScreen
 
 @Composable
 fun AppNavigation() {
@@ -19,6 +20,5 @@ fun AppNavigation() {
         composable(route = CallScreen.ROUTE) {
             CallScreen.Screen()
         }
-
     }
 }

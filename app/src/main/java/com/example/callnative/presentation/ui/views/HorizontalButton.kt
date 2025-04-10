@@ -55,7 +55,8 @@ fun HorizontalButton(
                     .weight(1f)
                     .focusGroup(),
                 iconResId = if (hasSpeaker) R.drawable.ic_speaker_enable else R.drawable.ic_speaker_disable,
-                label = if (hasSpeaker) "Speaker out" else "Speaker in",
+                label = context.getString(R.string.speaker),
+                size = 50.dp,
                 onClick = {
                     //
                     viewModel.toggleSpeaker()
@@ -66,8 +67,9 @@ fun HorizontalButton(
                     .focusGroup()
                     .padding(0.dp),
                 iconResId = if (hasVideo) R.drawable.ic_camera_enable else R.drawable.ic_camera_disable,
-                label = "Camera",
-                callType == CallType.VIDEO_CALL,
+                label = context.getString(R.string.camera),
+                size = 50.dp,
+                enable = callType == CallType.VIDEO_CALL,
                 onClick = {
                     // Handle camera action
                     viewModel.toggleVideo()
@@ -78,7 +80,8 @@ fun HorizontalButton(
                     .weight(1f)
                     .focusGroup(),
                 iconResId = if (hasMicrophone) R.drawable.ic_microphone_enable else R.drawable.ic_microphone_disable,
-                label = if (hasMicrophone) "Mute" else "Un mute",
+                label = context.getString(R.string.mute),
+                size = 50.dp,
                 onClick = {
                     //
                     viewModel.toggleMicrophone()
@@ -87,7 +90,10 @@ fun HorizontalButton(
                 modifier = Modifier
                     .weight(1f)
                     .focusGroup(),
-                iconResId = R.drawable.ic_end, label = "End", onClick = {
+                iconResId = R.drawable.ic_end,
+                label = context.getString(R.string.end),
+                size = 50.dp,
+                onClick = {
                     //
                     viewModel.handleEndCall()
                 })

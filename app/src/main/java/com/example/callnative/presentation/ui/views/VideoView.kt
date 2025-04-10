@@ -15,8 +15,7 @@ import org.webrtc.SurfaceViewRenderer
 
 @Composable
 fun VideoView(
-    viewModel: CallViewModel = hiltViewModel(),
-    context: Context = LocalContext.current
+    viewModel: CallViewModel = hiltViewModel()
 ) {
     val eglBase = remember { EglBase.create() }
 

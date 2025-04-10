@@ -84,10 +84,3 @@ fun CameraPreviewScreen() {
     )
 }
 
-//@Preview(showBackground = true)
-//@Composable
-//fun GreetingPreview() {
-//    CallNativeTheme {
-//
-//    }
-//}

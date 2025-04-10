@@ -1,4 +1,14 @@
 <resources>
     <string name="app_name">CallNative</string>
     <string name="permission_denied_message">If you reject permission,you can not use this service Please turn on permissions at [Setting] > [Permission]</string>
+    <string name="answer">Answer</string>
+    <string name="decline">Decline</string>
+    <string name="ziichat_voice">ZiiChat voice…</string>
+    <string name="ziichat_video">ZiiChat video…</string>
+    <string name="remind_me">Remind Me</string>
+    <string name="message">Message</string>
+    <string name="speaker">Speaker</string>
+    <string name="camera">Camera</string>
+    <string name="mute">Mute</string>
+    <string name="end">End</string>
 </resources>

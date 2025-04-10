@@ -10,6 +10,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.Dp
@@ -17,28 +18,28 @@ import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 
 
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun IconView(
     iconRes: Int,
     imageUri: Any? = null,
-    size: Int,
+    size: Dp = 0.dp,
     start: Dp = 0.dp,
     top: Dp = 0.dp,
     end: Dp = 0.dp,
     bottom: Dp = 0.dp,
+    shape: Shape? = null,
     onclick: (() -> Unit)? = null,
 ) {
     var modifier = Modifier
-        .size(size.dp)
+        .size(size)
         .padding(
             start = start,
             top = top,
             end = end,
             bottom = bottom
         )
-        .clip(CircleShape)
+        .let { if (shape != null) it.clip(CircleShape) else it }
         .let { if (onclick != null) it.clickable { onclick() } else it }
 
     if (imageUri != null)

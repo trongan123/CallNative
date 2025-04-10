@@ -1,47 +1,48 @@
 package com.example.callnative.presentation.ui.call
 
-import androidx.compose.animation.core.animateFloatAsState
-import androidx.compose.foundation.gestures.detectDragGestures
+import android.content.Context
+import androidx.compose.foundation.background
+import androidx.compose.foundation.focusGroup
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.offset
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.systemBarsPadding
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableFloatStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.input.pointer.pointerInput
-import androidx.compose.ui.platform.LocalConfiguration
-import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.unit.IntOffset
+import androidx.compose.ui.draw.blur
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.callnative.R
-import com.example.callnative.common.utils.NavigationUtils
-import com.example.callnative.data.enums.CallType
-import com.example.callnative.data.enums.ProfileViewSize
-import com.example.callnative.presentation.ui.views.CallView
-import com.example.callnative.presentation.ui.views.HorizontalButton
+import com.example.callnative.presentation.theme.black50
+import com.example.callnative.presentation.theme.color_text_type_call
+import com.example.callnative.presentation.ui.views.IconView
+import com.example.callnative.presentation.ui.views.LabelButtonView
 import com.example.callnative.presentation.viewmodel.CallViewModel
-import kotlin.math.roundToInt
 
 object NotiCallScreen {
     const val ROUTE = "notiCallScreen"
 
-
     @Composable
-    fun Screen(
-        viewModel: CallViewModel = hiltViewModel()
-    ) {
-        var callType = NavigationUtils.getSavedStateHandle()?.get<CallType>("CallType")
-        viewModel.setupData(callType = callType ?: CallType.VOICE_CALL)
-        viewModel.initPeerConnectionFactory()
-        viewModel.handleAudio()
+    fun Screen(viewModel: CallViewModel = hiltViewModel(), isCallVideo: Boolean) {
+        val context: Context = LocalContext.current
+        val callerData by viewModel.callerData.collectAsState()
+
         Scaffold(
             modifier = Modifier
                 .fillMaxSize()
@@ -49,89 +50,111 @@ object NotiCallScreen {
         )
         { innerPadding ->
             Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(innerPadding)
-                    .systemBarsPadding()
+                modifier = Modifier.padding(innerPadding)
             ) {
-                // Bind ViewModel
-                val calleeData by viewModel.calleeData.collectAsState()
-                val callerData by viewModel.callerData.collectAsState()
-                val callState by viewModel.getCallState().collectAsState()
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .blur(10.dp)
+                        .background(
+                            MaterialTheme.colorScheme.black50,
+                            shape = RoundedCornerShape(0.dp)
+                        )
+                )
 
-                val hasVideo by viewModel.getHasVideo().collectAsState()
+                // Foreground Content
+                Column(
+                    modifier = Modifier
+                        .align(Alignment.TopCenter)
+                        .padding(
+                            top = 50.dp,
+                            start = 10.dp,
+                            end = 10.dp
+                        ),
+                    horizontalAlignment = Alignment.CenterHorizontally
 
-                // Drag&Drop values
-                val screenWidth = LocalConfiguration.current.screenWidthDp.dp
-                val screenHeight = LocalConfiguration.current.screenHeightDp.dp
-                val boxSizeWidth = 112.dp
-                val boxSizeHeight = 120.dp
-
-                val density = LocalDensity.current
-                val screenWidthPx = with(density) { screenWidth.toPx() }
-                val screenHeightPx = with(density) { screenHeight.toPx() }
-                val boxSizePx = with(density) { boxSizeWidth.toPx() }
-
-                var offsetX by remember {
-                    mutableFloatStateOf(
-                        screenWidthPx - boxSizePx - with(
-                            density
-                        ) { 16.dp.toPx() })
-                }
-                var offsetY by remember { mutableFloatStateOf(with(density) { 0.dp.toPx() }) }
-                val animatedOffsetX by animateFloatAsState(targetValue = offsetX)
-                val animatedOffsetY by animateFloatAsState(targetValue = offsetY)
-                val maxOffsetY =
-                    screenHeightPx - with(density) { boxSizeHeight.toPx() } - with(density) { 250.dp.toPx() }
-
-                // Remote user
-                Box {
-                    CallView(
-                        profileSize = ProfileViewSize.FULLSCREEN,
-                        avatarImageUrl = calleeData.avatarImageUrl,
-                        displayName = calleeData.displayName,
-                        callState = callState,
-                        defaultAvatarResId = R.drawable.img_avatar_default
+                ) {
+                    Text(
+                        text = callerData.displayName,
+                        color = Color.White,
+                        fontSize = 35.sp,
+                        fontWeight = FontWeight.Bold,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
                     )
 
-                    // Local user
-                    if (callType == CallType.VIDEO_CALL) {
-                        Box(
+                    Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
+                        Row(
                             modifier = Modifier
-                                .offset {
-                                    IntOffset(
-                                        animatedOffsetX.roundToInt(),
-                                        animatedOffsetY.roundToInt()
-                                    )
-                                }
-                                .padding(top = 50.dp, end = 16.dp)
-                                .pointerInput(Unit) {
-                                    detectDragGestures { change, dragAmount ->
-                                        change.consume()
-                                        offsetX = (offsetX + dragAmount.x)
-                                            .coerceIn(0f, screenWidthPx - boxSizePx)
-                                        offsetY = (offsetY + dragAmount.y)
-                                            .coerceIn(0f, maxOffsetY)
-                                    }
-                                }
+                                .padding(5.dp),
+                            verticalAlignment = Alignment.CenterVertically
                         ) {
-                            CallView(
-                                profileSize = ProfileViewSize.MINIMIZE,
-                                avatarImageUrl = callerData.avatarImageUrl,
-                                displayName = callerData.displayName,
-                                defaultAvatarResId = R.drawable.img_avatar_default,
-                                hasVideo = hasVideo
+                            IconView(
+                                R.drawable.ic_logo,
+                                size = 24.dp
+                            )
+                            Text(
+                                modifier = Modifier
+                                    .padding(start = 5.dp),
+                                text = context.getString(if (isCallVideo) R.string.ziichat_video else R.string.ziichat_voice),
+                                color = MaterialTheme.colorScheme.color_text_type_call,
+                                fontSize = 24.sp,
+                                maxLines = 1,
+                                overflow = TextOverflow.Ellipsis,
                             )
                         }
                     }
                 }
+            }
 
-                // Bottom Buttons
-                HorizontalButton(callType = callType)
-
+            Box(
+                modifier = Modifier.fillMaxSize()
+            ) {
+                Row(
+                    modifier = Modifier
+                        .align(Alignment.BottomCenter)
+                        .padding(
+                            bottom = 30.dp,
+                            start = 5.dp,
+                            end = 5.dp
+                        )
+                        .fillMaxWidth(),
+                    horizontalArrangement = Arrangement.Center,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    LabelButtonView(
+                        modifier = Modifier
+                            .weight(1f)
+                            .focusGroup(),
+                        iconResId = R.drawable.ic_decline,
+                        label = context.getString(R.string.decline),
+                        size = 70.dp,
+                        onClick = {
+                            viewModel.handleDecline()
+                        })
+                    LabelButtonView(
+                        modifier = Modifier
+                            .weight(1f)
+                            .focusGroup()
+                            .padding(0.dp),
+                        iconResId = R.drawable.ic_answer,
+                        label = context.getString(R.string.answer),
+                        size = 70.dp,
+                        onClick = {
+                            viewModel.handleAnswer(isCallVideo)
+                        },
+                    )
+                }
             }
         }
 
     }
-
 }
+
+//@Preview(showBackground = true)
+//@Composable
+//fun GreetingPreview() {
+//    CallNativeTheme {
+//        Screen()
+//    }
+//}
